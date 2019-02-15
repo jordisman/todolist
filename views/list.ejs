@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Todo List</title>
 </head>
 <body>
   <!-- <% if (kindOfDay === 'Saturday' || kindOfDay === 'Sunday') { %>
-    <h1 style="color: purple"><%= kindOfDay %> Todo List</h1>
+    <h1><%= kindOfDay %> Todo List</h1>
   <% } else { %>
-    <h1 style="color: blue"><%= kindOfDay %> Todo List</h1>
+    <h1><%= kindOfDay %> Todo List</h1>
   <% } %> -->
   <h1>Today is <%= kindOfDay %> </h1>
   <p>Add new tasks to the list!</p>
 
   <ul>
-
+    <!-- <li>item1</li>
+    <li>item2</li>
+    <li><%= newListItem ></li> -->
     <% for (var i = 0; i < newListItems.length; i++) { %>
       <li> <%= newListItems[i] %> </li>
     <% } %>
