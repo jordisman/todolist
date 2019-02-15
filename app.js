@@ -7,8 +7,10 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 //if use item = '', last item will get over written
-var items = [];
+var items = ['buy apples', 'go running'];
+var complete = ['complete task 1'];
 
+//first load up home page /
 app.get('/', function(req, res) {
   var today = new Date();
   // var currentDay = today.getDay();
@@ -45,17 +47,35 @@ app.get('/', function(req, res) {
   //locals: an obj whose props define local variables for the view
   res.render('list', {
     kindOfDay: day,
-    newListItems: items
+    newListItems: items,
+    completeItems: complete
   });
 });
 
-app.post('/', function(req, res) {
+app.post('/add', function(req, res) {
   //console.log('req.body = ', req.body)
   var item = req.body.newItem; //input name="newItem"
 
   items.push(item);
   //cant use res.render('list', {kindOfDay: day})
   res.redirect('/'); //when post is triggered, go back to get /
+});
+
+app.post('/removeme', function(req, res) {
+  console.log('req.body.check = ', req.body.check)
+  var completeTask = req.body.check;
+
+  if (typeof completeTask === 'string') {
+    complete.push(completeTask);
+    items.splice(items.indexOf(completeTask), 1);
+  } else if (typeof completeTask === "object") {
+    for (var i = 0; i < completeTask.length; i++) {
+      complete.push(completeTask[i]);
+      items.splice(items.indexOf(completeTask[i]), 1);
+    }
+  }
+
+  res.redirect('/');
 });
 
 app.listen(3000, function() {

@@ -9,24 +9,33 @@
   <% } else { %>
     <h1><%= kindOfDay %> Todo List</h1>
   <% } %> -->
-  <h1>Today is <%= kindOfDay %> </h1>
-  <p>Add new tasks to the list!</p>
+  <h1>Today is <%=kindOfDay%> </h1>
 
-  <ul>
-    <li>item1</li>
-    <li>item2</li>
-    <!-- <li><%= newListItem ></li> -->
-    <!-- need to loop to add new li -->
-    <% for (var i = 0; i < newListItems.length; i++) { %>
-      <li> <%= newListItems[i] %> </li>
-    <% } %>
-
-  </ul>
-
-  <form action="/" method="post">
+  <form action="/add" method="POST">
     <input type="text" name="newItem">
-    <button type="submit" name="button">Add</button>
+    <button type="submit" name="add">add new task</button>
+
+    <h3> Added Task </h3>
+    <ul style="list-style: none;">
+      <%  for(var i = 0 ; i < newListItems.length; i++) { %>
+      <li>
+        <!-- must have value = actual item or it'd show 'on' -->
+        <input type="checkbox" name="check" value="<%= newListItems[i] %>" />
+        <%= newListItems[i] %>
+      </li>
+      <%  } %>
+    </ul>
+
+    <button type="submit" name="remove" formaction="/removeme">remove task</button>
+
   </form>
+
+    <h3> Completed Task </h3>
+    <ul style="list-style: none;">
+      <% for(var i = 0; i < completeItems.length; i++){ %>
+      <li><input type="checkbox" checked><%= completeItems[i] %> </li>
+      <% } %>
+    </ul>
 
 </body>
 </html>
