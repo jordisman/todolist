@@ -3,39 +3,30 @@
 <head>
   <title>Todo List</title>
 </head>
-<body>
-  <!-- <% if (kindOfDay === 'Saturday' || kindOfDay === 'Sunday') { %>
-    <h1><%= kindOfDay %> Todo List</h1>
-  <% } else { %>
-    <h1><%= kindOfDay %> Todo List</h1>
-  <% } %> -->
-  <h1>Today is <%=kindOfDay%> </h1>
+  <body>
+    <div class="box" id="heading">
+      <h1>Today is <%= currentDay %> </h1>
+    </div>
 
-  <form action="/add" method="POST">
-    <input type="text" name="newItem">
-    <button type="submit" name="add">add new task</button>
+    <div class="box" >
 
-    <h3> Added Task </h3>
-    <ul style="list-style: none;">
-      <%  for(var i = 0 ; i < newListItems.length; i++) { %>
-      <li>
+      <% newListItems.forEach(function(item) { %>
 
-        <input type="checkbox" name="check" value="<%= newListItems[i] %>" />
-        <%= newListItems[i] %>
-      </li>
-      <%  } %>
-    </ul>
+        <form action="/delete" method="post">
+          <div class="item">
+            <input type="checkbox" name="checkbox"
+            value="<%=item._id%>" onChange="this.form.submit()">
+            <p> <%=item.name%> </p>
+          </div>
+        </form>
 
-    <button type="submit" name="remove" formaction="/removeme">remove task</button>
+      <% }) %>
 
-  </form>
+      <form action="/", method="post" class="item">
+        <input type="text" name="newItem" placeholder="New Item">
+        <button type="submit" name="addBtn">Add</button>
+      </form>
 
-    <h3> Completed Task </h3>
-    <ul style="list-style: none;">
-      <% for(var i = 0; i < completeItems.length; i++){ %>
-      <li><input type="checkbox" checked><%= completeItems[i] %> </li>
-      <% } %>
-    </ul>
-
-</body>
+    </div>
+  </body>
 </html>
