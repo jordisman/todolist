@@ -1,14 +1,31 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
+var mongoose = require('mongoose');
 
 const app = express();
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 //if use item = '', last item will get over written
-var items = ['buy apples', 'go running'];
-var complete = ['complete task 1'];
+// var items = ['buy apples', 'go running'];
+mongoose.connect('mongodb://localhost:27017/todolistDB', { useNewUrlParser: true });
+
+var itemsSchema = new mongoose.Schema({
+  name: String
+});
+
+var Item = mongoose.model('Item', itemsSchema);
+
+var item1 = new Item({
+  name: 'Buy Apples'
+});
+var item2 = new Item({
+  name: 'Walk the dog'
+});
+
+
+var defaultItems = [item1, item2];
 
 //first load up home page /
 app.get('/', function(req, res) {
@@ -17,21 +34,6 @@ app.get('/', function(req, res) {
   //The getDay() method returns the day of the week
   // var day = '';
 
-// if (currentDay === 0) {
-//   day = 'Sunday';
-// } else if (currentDay === 6) {
-//   day = 'Saturday';
-// } else if (currentDay === 5) {
-//   day = 'Friday';
-// } else if (currentDay === 4) {
-//   day = 'Thursday';
-// } else if (currentDay === 3) {
-//   day = 'Wednesday';
-// } else if (currentDay === 2) {
-//   day = 'Tuesday';
-// } else if (currentDay === 1) {
-//   day = 'Monday';
-// }
   //https://stackoverflow.com/questions/3552461/how-to-format-a-javascript-date
 
   //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
@@ -43,39 +45,51 @@ app.get('/', function(req, res) {
   };
 
   var day = today.toLocaleDateString('en-US', options);
+
+
+    Item.find({}, function (err, foundItems) {
+    if (foundItems.length === 0) {
+      Item.insertMany(defaultItems, function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('insertMany OK!')
+        }
+      });
+      res.redirect('/');
+      //after insert items, it stops and won't go to else - render
+      //use redirect to get it to root again, then it'd be else case
+    } else {
+      res.render('list', {
+        currentDay: day,
+        newListItems: foundItems
+      });
+    }
+  });
   //res.render(view [, locals] [, callback])
   //locals: an obj whose props define local variables for the view
-  res.render('list', {
-    kindOfDay: day,
-    newListItems: items,
-    completeItems: complete
+});
+
+app.post('/', function(req, res) {
+
+  var item = new Item({ //create new data
+    name: req.body.newItem
   });
-});
-
-app.post('/add', function(req, res) {
-  //console.log('req.body = ', req.body)
-  var item = req.body.newItem; //input name="newItem"
-
-  items.push(item);
-  //cant use res.render('list', {kindOfDay: day})
-  res.redirect('/'); //when post is triggered, go back to get /
-});
-
-app.post('/removeme', function(req, res) {
-  console.log('req.body.check = ', req.body.check)
-  var completeTask = req.body.check;
-
-  if (typeof completeTask === 'string') {
-    complete.push(completeTask);
-    items.splice(items.indexOf(completeTask), 1);
-  } else if (typeof completeTask === "object") {
-    for (var i = 0; i < completeTask.length; i++) {
-      complete.push(completeTask[i]);
-      items.splice(items.indexOf(completeTask[i]), 1);
-    }
-  }
-
+  item.save(); //save to db, like push to arr
   res.redirect('/');
+});
+
+app.post('/delete', function(req, res) {
+  console.log(req.body);
+  var checkedItemId = req.body.checkbox;
+//Model.findByIdAndRemove()
+  Item.findByIdAndRemove(checkedItemId, function(err) {
+    if (!err) {
+      console.log('Removed!')
+      res.redirect('/');
+    }
+  });
+
 });
 
 app.listen(3000, function() {
