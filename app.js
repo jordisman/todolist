@@ -23,9 +23,12 @@ var item1 = new Item({
 var item2 = new Item({
   name: 'Walk the dog'
 });
+var item3 = new Item({
+  name: 'Go to gym'
+});
 
 
-var defaultItems = [item1, item2];
+var defaultItems = [item1, item2, item3];
 
 //first load up home page /
 app.get('/', function(req, res) {
@@ -60,7 +63,7 @@ app.get('/', function(req, res) {
       //after insert items, it stops and won't go to else - render
       //use redirect to get it to root again, then it'd be else case
     } else {
-      res.render('list', {
+      res.render('list', { // pass a local variable to the view
         currentDay: day,
         newListItems: foundItems
       });
